@@ -1,16 +1,14 @@
 import React from "react";
-import Blog from "../components/blog";
 import axios from "axios";
+import Todo from "../components/todo";
 
 const Blogs = (props: any) => {
   const todos = props["data"];
   return (
     <div className="blogs-page">
-      oks
       {todos.map((todo: any) => (
         <div className="todo" key={todo.ID}>
-          <div className="title">{todo.Title}</div>
-          <div className="content">{todo.Content}</div>
+          <Todo title={todo.Title} content={todo.Content} id={todo.ID}></Todo>
         </div>
       ))}
     </div>
