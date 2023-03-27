@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+interface userInput {
+  username: string;
+  password: string;
+}
 
 const Login = () => {
+  const [UserInput, setUserInput] = useState<userInput>({
+    username: "",
+    password: "",
+  });
+
   return (
     <div className="register-container items-center flex flex-col">
       <div className="register-title my-10 text-3xl">Login</div>
@@ -19,7 +28,7 @@ const Login = () => {
             password
           </label>
           <input
-            type="text"
+            type="password"
             name="password"
             id=""
             className="border-solid border-black border-2 rounded-lg px-2 py-1"
