@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 interface userInput {
   username: string;
@@ -10,11 +11,22 @@ const Login = () => {
     password: "",
   });
 
+  const loginUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const inputString = JSON.stringify(UserInput);
+    const postResponse = await axios
+      .post("http://localhost:8080/login", UserInput)
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("jwt", res.data["jwt"]);
+      });
+  };
+
   return (
     <div className="register-container items-center flex flex-col">
       <div className="register-title my-10 text-3xl">Login</div>
       <div className="register-container border-solid border-black border-2 pb-3 px-5">
-        <div className="form flex flex-col">
+        <form className="form flex flex-col" onSubmit={(e) => loginUser(e)}>
           <label htmlFor="username" className="mt-3 ml-1">
             Username
           </label>
@@ -23,6 +35,10 @@ const Login = () => {
             name="username"
             id=""
             className="border-solid border-black border-2 rounded-lg px-2 py-1"
+            value={UserInput.username}
+            onChange={(e) =>
+              setUserInput({ ...UserInput, [e.target.name]: e.target.value })
+            }
           />
           <label htmlFor="password" className="mt-3 ml-1">
             password
@@ -32,6 +48,10 @@ const Login = () => {
             name="password"
             id=""
             className="border-solid border-black border-2 rounded-lg px-2 py-1"
+            value={UserInput.password}
+            onChange={(e) =>
+              setUserInput({ ...UserInput, [e.target.name]: e.target.value })
+            }
           />
           <button
             type="submit"
@@ -39,7 +59,7 @@ const Login = () => {
           >
             Login
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

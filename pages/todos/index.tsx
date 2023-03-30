@@ -1,8 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Todo from "@/components/todo";
+import Session from "@/provider/session";
 
 const Todos = (props: any) => {
+  const [Token, setToken] = useState<string>("");
+  useEffect(() => {
+    // Perform localStorage action
+    const tokenStr = localStorage.getItem("jwt");
+
+    if (tokenStr != null) {
+      setToken(tokenStr);
+    } else {
+      console.log("no token");
+    }
+  }, [Token]);
+  if (Token != null) {
+    Session(Token);
+  }
+  //Session(Token);
   const todos = props["data"];
   return (
     <div className="todos-page flex flex-col items-center">
