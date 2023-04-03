@@ -1,15 +1,23 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 interface userInput {
   username: string;
   password: string;
 }
 
 const Login = () => {
+  useEffect(() => {
+    if (localStorage.getItem("jwt")) {
+      router.push("/todos");
+    }
+  }, []);
+
   const [UserInput, setUserInput] = useState<userInput>({
     username: "",
     password: "",
   });
+  const router = useRouter();
 
   const loginUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,8 +25,8 @@ const Login = () => {
     const postResponse = await axios
       .post("http://localhost:8080/login", UserInput)
       .then((res) => {
-        console.log(res);
         localStorage.setItem("jwt", res.data["jwt"]);
+        router.push("/todos");
       });
   };
 
