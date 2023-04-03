@@ -17,18 +17,34 @@ const Todos = () => {
     Author_id: string;
   }
 
+  // interface userInput {
+  //   content: string;
+  // }
+
   const [Token, setToken] = useState<string>("");
   const [TodoInput, setTodoInput] = useState<string>("");
   const [ResponseData, setResponseData] = useState<ResData[]>([]);
+  const [TodoAdded, setTodoAdded] = useState<boolean>(false);
+
   const router = useRouter();
 
   const addTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const postResponse = await axios
-      .post("http://localhost:8080/todo/new", {})
+      .post(
+        "http://localhost:8080/todo/new",
+        { content: TodoInput },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("jwt"),
+          },
+        }
+      )
       .then((res) => {
-        localStorage.setItem("jwt", res.data["jwt"]);
-        router.push("/todos");
+        console.log(res);
+        setTodoInput("");
+        setTodoAdded(TodoAdded ? false : true);
       });
   };
 
@@ -36,7 +52,7 @@ const Todos = () => {
     const res = await axios.get("http://localhost:8080/todo/all", {
       headers: {
         "Content-Type": "application/json",
-        Authorization: Token,
+        Authorization: localStorage.getItem("jwt"),
       },
     });
     return res;
@@ -50,14 +66,11 @@ const Todos = () => {
       getTodos().then((res) => {
         setResponseData(res.data.data);
       });
-      setToken(tokenStr);
     } else {
       router.push("/login");
     }
-  }, []);
+  }, [TodoAdded]);
 
-  //Session(Token);
-  console.log(ResponseData);
   return (
     <div className="todos-page flex flex-col items-center w-2/3 mx-auto">
       <form className="add w-full mt-8" onSubmit={(e) => addTodo(e)}>
