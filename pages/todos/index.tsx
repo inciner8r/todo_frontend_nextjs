@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-const Todos = (props: any) => {
+const Todos = () => {
   interface ResData {
     ID: number;
     CreatedAt: Date;
@@ -19,7 +19,7 @@ const Todos = (props: any) => {
 
   const [Token, setToken] = useState<string>("");
   const [TodoInput, setTodoInput] = useState<string>("");
-  const [ResponseData, setResponse] = useState<any>();
+  const [ResponseData, setResponseData] = useState<ResData[]>([]);
   const router = useRouter();
 
   const addTodo = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,15 +33,13 @@ const Todos = (props: any) => {
   };
 
   const getTodos = async () => {
-    const res = await axios("http://localhost:8080/todo/all", {
+    const res = await axios.get("http://localhost:8080/todo/all", {
       headers: {
         "Content-Type": "application/json",
-        Token: Token,
+        Authorization: Token,
       },
-    }).then((res) => {
-      setResponse(res.data);
-      console.log(ResponseData);
     });
+    return res;
   };
 
   useEffect(() => {
@@ -49,16 +47,17 @@ const Todos = (props: any) => {
     const tokenStr = localStorage.getItem("jwt");
 
     if (tokenStr != null) {
-      getTodos();
+      getTodos().then((res) => {
+        setResponseData(res.data.data);
+      });
       setToken(tokenStr);
-      console.log(props);
     } else {
       router.push("/login");
     }
   }, []);
 
   //Session(Token);
-  const todos = props["data"];
+  console.log(ResponseData);
   return (
     <div className="todos-page flex flex-col items-center w-2/3 mx-auto">
       <form className="add w-full mt-8" onSubmit={(e) => addTodo(e)}>
@@ -80,7 +79,7 @@ const Todos = (props: any) => {
       </form>
       <div className="title text-4xl font-extrabold m-6">Todos</div>
       <div className="todos w-full">
-        {todos.map((todo: any) => (
+        {ResponseData.map((todo: any) => (
           <div className="todo" key={todo.ID}>
             <Todo title={todo.Title} content={todo.Content} id={todo.ID}></Todo>
           </div>
@@ -90,15 +89,4 @@ const Todos = (props: any) => {
   );
 };
 
-export const getStaticProps = async () => {
-  const res = await axios("http://localhost:8080/todo/all", {
-    headers: {
-      "Content-Type": "application/json",
-      Token: "JWT fefege...",
-    },
-  });
-  return {
-    props: res.data,
-  };
-};
 export default Todos;
